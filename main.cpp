@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
-
+#include <signal.h>
 class CFunctionBase
 {
 public:
@@ -129,6 +129,23 @@ public:
 		return 0;
 	}
 
+	static int SwitchDeamon() {
+		pid_t ret = fork();
+		if (ret == -1)return -1;
+		if (ret > 0)exit(0);//主进程到此为止
+		//子进程内容如下
+		ret = setsid();
+		if (ret == -1)return -2;//失败，则返回
+		ret = fork();
+		if (ret == -1)return -3;
+		if (ret > 0)exit(0);//子进程到此为止
+		//孙进程的内容如下，进入守护状态
+		for (int i = 0; i < 3; i++) close(i);
+		umask(0);
+		signal(SIGCHLD, SIG_IGN);
+		return 0;
+	}
+
 
 private:
 	CFunctionBase* m_func;
@@ -161,6 +178,7 @@ int CreateClientServer(CProcess* proc)
 
 int main()
 {
+	// CProcess::SwitchDeamon();
 	CProcess proclog, procclients;
 	printf("%s(%d):<%s> pid=%d\n", __FILE__, __LINE__, __FUNCTION__, getpid());
 	proclog.SetEntryFunction(CreateLogServer, &proclog);

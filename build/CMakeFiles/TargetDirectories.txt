@@ -1,0 +1,3 @@
+/home/lgy/HttpServer/build/CMakeFiles/main.dir
+/home/lgy/HttpServer/build/CMakeFiles/edit_cache.dir
+/home/lgy/HttpServer/build/CMakeFiles/rebuild_cache.dir
